@@ -1,11 +1,11 @@
-// ===== Quiz Logic & Product Recommendation =====
+// ===== Simple Quiz Logic & Product Recommendation =====
 
-// Track scores for each category
-const scores = {
-  productivity: 0,
-  creative: 0,
-  learning: 0,
-  bundle: 0
+// Track the key answers
+const quizState = {
+  category: null,   // productivity | creative | learning | bundle
+  experience: null, // beginner | intermediate | advanced
+  format: null,     // templates | video | challenge | all
+  budget: null      // low | mid | bundle
 };
 
 let currentStep = 1;
@@ -133,46 +133,40 @@ function setActiveStep(step) {
   updateProgress();
 }
 
-function resetScores() {
-  scores.productivity = 0;
-  scores.creative = 0;
-  scores.learning = 0;
-  scores.bundle = 0;
+// Reset quiz answers
+function resetQuizState() {
+  quizState.category = null;
+  quizState.experience = null;
+  quizState.format = null;
+  quizState.budget = null;
 }
 
-// Store answers so going back still works
-const answersByStep = {}; // step -> [tags]
+// Map answers to which product to show
+function determineProduct(state) {
+  const category = state.category || "productivity";
+  const budget = state.budget || "mid";
 
-function recordAnswer(step, tags) {
-  answersByStep[step] = tags;
+  // If they want the bundle or "everything", show bundle
+  if (budget === "bundle" || category === "bundle") {
+    return "bundle";
+  }
+
+  // Lowest budget: always the cheapest product
+  if (budget === "low") {
+    return "productivity";
+  }
+
+  // Mid / normal budget:
+  if (category === "learning") return "learning";
+  if (category === "creative") return "creative";
+  return "productivity";
 }
 
-function recomputeScores() {
-  resetScores();
-  Object.keys(answersByStep).forEach((stepKey) => {
-    const tags = answersByStep[stepKey];
-    tags.forEach((tag) => {
-      if (scores[tag] !== undefined) {
-        scores[tag]++;
-      }
-    });
-  });
-}
+// Fill DOM with single-product data
+function renderPrimaryProduct(productKey) {
+  const primaryData = productData[productKey];
 
-function getPrimaryCategory() {
-  const entries = Object.entries(scores);
-  entries.sort((a, b) => b[1] - a[1]); // highest score first
-  const [topCategory, topScore] = entries[0];
-
-  if (topScore === 0) return "bundle"; // default safety
-
-  return topCategory;
-}
-
-// Fill DOM with primary product data (single toolkit)
-function renderPrimaryProduct(category) {
-  const primaryData =
-    productData[category] || productData["productivity"];
+  if (!primaryData) return;
 
   const nameEl = document.getElementById("primary-product-name");
   const taglineEl = document.getElementById("primary-product-tagline");
@@ -192,7 +186,6 @@ function renderPrimaryProduct(category) {
     bulletsEl.appendChild(li);
   });
 
-  // Store checkout URL for this product on the button
   primaryBuyBtn.dataset.checkoutUrl = primaryData.checkoutUrl || "#";
 }
 
@@ -211,8 +204,7 @@ function renderBundleProduct() {
 startQuizBtn.addEventListener("click", () => {
   showElement(quizSection);
   hideElement(resultSection);
-  resetScores();
-  Object.keys(answersByStep).forEach((k) => delete answersByStep[k]);
+  resetQuizState();
   currentStep = 1;
   setActiveStep(1);
 
@@ -228,32 +220,21 @@ quizSteps.forEach((stepEl) => {
     const btn = e.target.closest(".answer-btn");
     if (!btn) return;
 
-    const tags = (btn.dataset.tags || "")
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean);
-
+    const value = btn.dataset.value;
     const stepNum = Number(stepEl.dataset.step);
 
-    // Record and recompute scores
-    recordAnswer(stepNum, tags);
-    recomputeScores();
+    // Save answer to state
+    if (stepNum === 1) quizState.category = value;
+    if (stepNum === 2) quizState.experience = value;
+    if (stepNum === 3) quizState.format = value;
+    if (stepNum === 4) quizState.budget = value;
 
     if (stepNum < totalSteps) {
       setActiveStep(stepNum + 1);
     } else {
-      // ===== End of quiz -> show result =====
-
-      // Default: pick top scoring category
-      let primaryCategory = getPrimaryCategory();
-
-      // OVERRIDE: if user picked bundle on the last question,
-      // force bundle as the recommendation.
-      if (tags.includes("bundle")) {
-        primaryCategory = "bundle";
-      }
-
-      const isBundle = primaryCategory === "bundle";
+      // End of quiz → show result based on state
+      const productKey = determineProduct(quizState);
+      const isBundle = productKey === "bundle";
 
       renderBundleProduct();
 
@@ -274,7 +255,7 @@ quizSteps.forEach((stepEl) => {
         resultIntro.textContent =
           "Based on your answers, here’s where you’ll see the biggest results in the next 7 days:";
 
-        renderPrimaryProduct(primaryCategory);
+        renderPrimaryProduct(productKey);
       }
 
       showElement(resultSection);
@@ -296,6 +277,14 @@ backBtn.addEventListener("click", () => {
 // Bundle strip button scrolls to result/bundle
 stripBundleBtn.addEventListener("click", () => {
   renderBundleProduct();
+  // Force show bundle card
+  singleCard.classList.add("hidden");
+  bundleCard.classList.remove("hidden");
+
+  resultHeading.textContent = "AI Everyday Mastery Bundle";
+  resultIntro.textContent =
+    "Unlock all three toolkits together for the best long-term value.";
+
   showElement(resultSection);
   resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
 });
