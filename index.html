@@ -8,7 +8,7 @@
 </head>
 <body>
   <header class="site-header">
-    <div class="logo-area">
+    <div className="logo-area">
       <span class="logo-mark">AI</span>
       <span class="logo-text">Everyday Advantage</span>
     </div>
@@ -240,7 +240,7 @@
               </div>
               <div class="quiz-illustration">
                 <img src="images/question4-budget.jpg"
-                     alt="Simple pricing cards for different AI products" />
+                     alt="Simple pricing cards for Starter, Serious, and Full Bundle" />
               </div>
             </div>
           </div>
@@ -256,15 +256,15 @@
     <!-- RESULT & PRODUCTS -->
     <section id="result-section" class="result-section hidden">
       <div class="result-card">
-        <h2>Your Personalized AI Recommendation</h2>
+        <h2 id="result-heading">Your Personalized AI Recommendation</h2>
         <p id="result-intro">
           Based on your answers, here’s where you’ll see the biggest
           results in the next 7 days:
         </p>
 
         <div class="result-layout">
-          <!-- Primary product -->
-          <div class="product-card primary">
+          <!-- Primary product (single toolkit) -->
+          <div id="single-card" class="product-card primary">
             <h3 id="primary-product-name">AI Productivity Playbook</h3>
             <p id="primary-product-tagline" class="product-tagline">
               Turn ChatGPT into your personal assistant for email, tasks &amp; life admin.
@@ -289,8 +289,8 @@
             </p>
           </div>
 
-          <!-- Bundle upsell card (always visible) -->
-          <div class="product-card bundle">
+          <!-- Bundle card -->
+          <div id="bundle-card" class="product-card bundle">
             <h3>AI Everyday Mastery Bundle</h3>
             <p class="product-tagline">
               All 3 toolkits: Productivity, Creative Studio &amp; Learning Lab — in one bundle.
@@ -302,8 +302,8 @@
               <li>✔ Lifetime updates to all resources</li>
             </ul>
             <div class="product-price-row">
-              <span class="product-price bundle-price">$59</span>
-              <span class="product-format">
+              <span id="bundle-price" class="product-price bundle-price">$59</span>
+              <span id="bundle-format" class="product-format">
                 Includes all guides, templates &amp; bonuses
               </span>
             </div>
