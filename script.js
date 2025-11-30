@@ -11,16 +11,35 @@ const scores = {
 let currentStep = 1;
 const totalSteps = 4;
 
+// Main sections
 const quizSection = document.getElementById("quiz-section");
 const resultSection = document.getElementById("result-section");
 
+// Buttons / controls
 const startQuizBtn = document.getElementById("start-quiz-btn");
 const backBtn = document.getElementById("back-btn");
 const stripBundleBtn = document.getElementById("strip-bundle-btn");
 
+// Progress UI
 const progressText = document.getElementById("progress-text");
 const progressFill = document.getElementById("progress-fill");
 const quizSteps = Array.from(document.querySelectorAll(".quiz-step"));
+
+// Result heading / intro
+const resultHeading = document.getElementById("result-heading");
+const resultIntro = document.getElementById("result-intro");
+
+// Result cards
+const singleCard = document.getElementById("single-card");
+const bundleCard = document.getElementById("bundle-card");
+
+// Primary product elements (single toolkit)
+const primaryBuyBtn = document.getElementById("primary-buy-btn");
+
+// Bundle elements
+const bundleBuyBtn = document.getElementById("bundle-buy-btn");
+const bundlePriceEl = document.getElementById("bundle-price");
+const bundleFormatEl = document.getElementById("bundle-format");
 
 // Modal elements
 const upsellModal = document.getElementById("upsell-modal");
@@ -28,11 +47,7 @@ const modalCloseBtn = document.getElementById("modal-close-btn");
 const modalUpgradeBundleBtn = document.getElementById("modal-upgrade-bundle-btn");
 const modalKeepSingleBtn = document.getElementById("modal-keep-single-btn");
 
-// Buy buttons
-const primaryBuyBtn = document.getElementById("primary-buy-btn");
-const bundleBuyBtn = document.getElementById("bundle-buy-btn");
-
-// Product data (replace "#" with real PayPal / checkout links)
+// Product data (replace checkoutUrl with real PayPal / Gumroad links)
 const productData = {
   productivity: {
     name: "AI Productivity Playbook",
@@ -45,8 +60,7 @@ const productData = {
     ],
     price: "$19",
     format: "PDF guide + copy-paste prompts",
-    // TODO: Replace with your real checkout URL
-    checkoutUrl: "#"
+    checkoutUrl: "#" // TODO: replace with real checkout link
   },
   creative: {
     name: "AI Creative Studio",
@@ -59,7 +73,7 @@ const productData = {
     ],
     price: "$29",
     format: "Prompt packs + content templates",
-    checkoutUrl: "#"
+    checkoutUrl: "#" // TODO: replace with real checkout link
   },
   learning: {
     name: "AI Learning Lab",
@@ -70,9 +84,9 @@ const productData = {
       "Language learning helpers and explanation templates",
       "7-day “level up a skill” challenge plan"
     ],
-    price: "$29",
+    price: "$39",
     format: "Guided playbook + practice prompts",
-    checkoutUrl: "#"
+    checkoutUrl: "#" // TODO: replace with real checkout link
   },
   bundle: {
     name: "AI Everyday Mastery Bundle",
@@ -85,7 +99,7 @@ const productData = {
     ],
     price: "$59",
     format: "All guides, templates & bonuses",
-    checkoutUrl: "#" // Replace with real bundle checkout URL
+    checkoutUrl: "#" // TODO: replace with real bundle checkout link
   }
 };
 
@@ -126,14 +140,13 @@ function resetScores() {
   scores.bundle = 0;
 }
 
-// Simple scoring snapshot if user goes back
+// Store answers so going back still works
 const answersByStep = {}; // step -> [tags]
 
 function recordAnswer(step, tags) {
   answersByStep[step] = tags;
 }
 
-// Recalculate scores from stored answers
 function recomputeScores() {
   resetScores();
   Object.keys(answersByStep).forEach((stepKey) => {
@@ -147,18 +160,16 @@ function recomputeScores() {
 }
 
 function getPrimaryCategory() {
-  // If bundle has the highest score, go bundle
   const entries = Object.entries(scores);
-  entries.sort((a, b) => b[1] - a[1]); // desc
+  entries.sort((a, b) => b[1] - a[1]); // highest score first
   const [topCategory, topScore] = entries[0];
 
-  // If everything is 0 (user somehow skipped?), default to bundle
-  if (topScore === 0) return "bundle";
+  if (topScore === 0) return "bundle"; // default safety
 
   return topCategory;
 }
 
-// Fill DOM with primary product data
+// Fill DOM with primary product data (single toolkit)
 function renderPrimaryProduct(category) {
   const primaryData =
     productData[category] || productData["productivity"];
@@ -181,8 +192,17 @@ function renderPrimaryProduct(category) {
     bulletsEl.appendChild(li);
   });
 
-  // Store current primary product checkout URL on button dataset
-  primaryBuyBtn.dataset.checkoutUrl = primaryData.checkoutUrl;
+  // Store checkout URL for this product on the button
+  primaryBuyBtn.dataset.checkoutUrl = primaryData.checkoutUrl || "#";
+}
+
+// Fill bundle price/format from data
+function renderBundleProduct() {
+  const bundleData = productData.bundle;
+  if (!bundleData) return;
+
+  bundlePriceEl.textContent = bundleData.price;
+  bundleFormatEl.textContent = bundleData.format;
 }
 
 // ===== Event Handlers =====
@@ -196,14 +216,13 @@ startQuizBtn.addEventListener("click", () => {
   currentStep = 1;
   setActiveStep(1);
 
-  // Scroll to quiz
   document.getElementById("quiz-section").scrollIntoView({
     behavior: "smooth",
     block: "start"
   });
 });
 
-// Answer clicks (delegate)
+// Answer clicks (delegated per step)
 quizSteps.forEach((stepEl) => {
   stepEl.addEventListener("click", (e) => {
     const btn = e.target.closest(".answer-btn");
@@ -216,20 +235,40 @@ quizSteps.forEach((stepEl) => {
 
     const stepNum = Number(stepEl.dataset.step);
 
-    // Record and recompute scores (so back button works)
+    // Record and recompute scores
     recordAnswer(stepNum, tags);
     recomputeScores();
 
-    // Move to next step or show results
     if (stepNum < totalSteps) {
       setActiveStep(stepNum + 1);
     } else {
-      // End of quiz
+      // End of quiz -> show result
       const primaryCategory = getPrimaryCategory();
-      renderPrimaryProduct(primaryCategory);
-      showElement(resultSection);
+      const isBundle = primaryCategory === "bundle";
 
-      // Scroll to result
+      renderBundleProduct();
+
+      if (isBundle) {
+        // Bundle-only result
+        singleCard.classList.add("hidden");
+        bundleCard.classList.remove("hidden");
+
+        resultHeading.textContent = "Your Best Match: Full AI Bundle";
+        resultIntro.textContent =
+          "Based on your answers, you’ll get the biggest results by unlocking all three toolkits together.";
+      } else {
+        // Single toolkit + bundle upsell
+        singleCard.classList.remove("hidden");
+        bundleCard.classList.remove("hidden");
+
+        resultHeading.textContent = "Your Personalized AI Recommendation";
+        resultIntro.textContent =
+          "Based on your answers, here’s where you’ll see the biggest results in the next 7 days:";
+
+        renderPrimaryProduct(primaryCategory);
+      }
+
+      showElement(resultSection);
       resultSection.scrollIntoView({
         behavior: "smooth",
         block: "start"
@@ -247,6 +286,7 @@ backBtn.addEventListener("click", () => {
 
 // Bundle strip button scrolls to result/bundle
 stripBundleBtn.addEventListener("click", () => {
+  renderBundleProduct();
   showElement(resultSection);
   resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
 });
@@ -265,6 +305,7 @@ function closeUpsellModal() {
 
 modalCloseBtn.addEventListener("click", closeUpsellModal);
 
+// If they say “keep single toolkit” in modal
 modalKeepSingleBtn.addEventListener("click", () => {
   closeUpsellModal();
   const url = primaryBuyBtn.dataset.checkoutUrl || "#";
@@ -277,6 +318,7 @@ modalKeepSingleBtn.addEventListener("click", () => {
   }
 });
 
+// If they upgrade to bundle from modal
 modalUpgradeBundleBtn.addEventListener("click", () => {
   closeUpsellModal();
   const url = productData.bundle.checkoutUrl || "#";
@@ -312,3 +354,6 @@ upsellModal.addEventListener("click", (e) => {
     closeUpsellModal();
   }
 });
+
+// Initial bundle price text
+renderBundleProduct();
