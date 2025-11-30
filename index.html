@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Helper Quiz – Find Your Perfect AI Toolkit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo-area">
+      <span class="logo-mark">AI</span>
+      <span class="logo-text">Everyday Advantage</span>
+    </div>
+    <nav class="top-nav">
+      <a href="#how-it-works">How it works</a>
+      <a href="#products">What you get</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO / LANDING -->
+    <section class="hero" id="top">
+      <div class="hero-text">
+        <h1>Turn Everyday AI Into Real Results in 7 Days</h1>
+        <p>
+          Answer a few quick questions and we’ll match you with the exact
+          AI toolkit that fits how you <strong>write, learn, and create</strong>
+          — plus an option to grab the full bundle at a huge discount.
+        </p>
+        <button id="start-quiz-btn" class="btn btn-primary">
+          Start the 30-Second Quiz
+        </button>
+        <p class="hero-subtext">No email required to see your result.</p>
+      </div>
+      <div class="hero-image">
+        <img src="images/hero-dashboard.jpg" alt="Person using AI on laptop for productivity and creativity" />
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="how-it-works" class="info-section">
+      <h2>How This Funnel Works</h2>
+      <div class="info-grid">
+        <div class="info-card">
+          <span class="step-number">1</span>
+          <h3>Answer a Few Questions</h3>
+          <p>
+            Tell us what you want AI to do for you — writing help, organization,
+            creative projects, or learning.
+          </p>
+        </div>
+        <div class="info-card">
+          <span class="step-number">2</span>
+          <h3>Get a Smart Recommendation</h3>
+          <p>
+            We match you to the product that fits your goals and skill level,
+            so you’re not guessing.
+          </p>
+        </div>
+        <div class="info-card">
+          <span class="step-number">3</span>
+          <h3>Unlock Your AI Toolkit</h3>
+          <p>
+            Choose a single toolkit or upgrade to the full bundle to cover
+            productivity, creativity, and learning.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUIZ SECTION -->
+    <section id="quiz-section" class="quiz-section hidden">
+      <div class="quiz-card">
+        <!-- Progress Bar -->
+        <div class="quiz-progress">
+          <div class="progress-label">
+            <span id="progress-text">Question 1 of 4</span>
+          </div>
+          <div class="progress-bar">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+        </div>
+
+        <!-- Quiz Steps -->
+        <div id="quiz-steps">
+          <!-- STEP 1 -->
+          <div class="quiz-step active" data-step="1">
+            <div class="quiz-step-content">
+              <div class="quiz-question">
+                <h2>What do you mainly want AI to help you with right now?</h2>
+                <p class="quiz-hint">
+                  Pick the one that feels most urgent for your life or work.
+                </p>
+                <div class="answer-grid">
+                  <button class="answer-btn"
+                    data-tags="productivity">
+                    Everyday productivity &amp; communication
+                    <span class="answer-sub">
+                      Email drafts, messages, notes, to-do lists
+                    </span>
+                  </button>
+                  <button class="answer-btn"
+                    data-tags="creative">
+                    Creative projects
+                    <span class="answer-sub">
+                      Writing, content, images, coding, ideas
+                    </span>
+                  </button>
+                  <button class="answer-btn"
+                    data-tags="learning">
+                    Learning &amp; personal growth
+                    <span class="answer-sub">
+                      Study help, job prep, new skills
+                    </span>
+                  </button>
+                  <button class="answer-btn"
+                    data-tags="bundle">
+                    Honestly… a bit of everything
+                    <span class="answer-sub">
+                      I want AI across work, life &amp; side projects
+                    </span>
+                  </button>
+                </div>
+              </div>
+              <div class="quiz-illustration">
+                <img src="images/question1-uses.jpg"
+                     alt="Different people using AI for productivity, creativity, and learning" />
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 2 -->
+          <div class="quiz-step" data-step="2">
+            <div class="quiz-step-content">
+              <div class="quiz-question">
+                <h2>How comfortable are you with AI tools today?</h2>
+                <p class="quiz-hint">
+                  This helps us pick the right depth, not overwhelm you.
+                </p>
+                <div class="answer-grid">
+                  <button class="answer-btn"
+                    data-tags="beginner,bundle">
+                    I’m new / barely used it
+                    <span class="answer-sub">
+                      I want simple “click-this, paste-that” guides
+                    </span>
+                  </button>
+                  <button class="answer-btn"
+                    data-tags="intermediate">
+                    I’ve tried a few tools
+                    <span class="answer-sub">
+                      I know basics, want better prompts &amp; workflows
+                    </span>
+                  </button>
+                  <button class="answer-btn"
+                    data-tags="advanced,bundle">
+                    I use AI a lot already
+                    <span class="answer-sub">
+                      I want advanced systems &amp; batch workflows
+                    </span>
+                  </button>
+                </div>
+              </div>
+              <div class="quiz-illustration">
+                <img src="images/question2-skill.jpg"
+                     alt="Beginner to advanced AI user skill levels" />
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 3 -->
+          <div class="quiz-step" data-step="3">
+            <div class="quiz-step-content">
+              <div class="quiz-question">
+                <h2>What format do you learn from best?</h2>
+                <p class="quiz-hint">
+                  We’ll point you to the product style that fits how you learn.
+                </p>
+                <div class="answer-grid">
+                  <button class="answer-btn"
+                    data-tags="productivity,learning">
+                    Checklists, templates &amp; swipe files
+                    <span class="answer-sub">
+                      I just want to plug-and-play
+                    </span>
+                  </button>
+                  <button class="answer-btn"
+                    data-tags="creative">
+                    Short video walkthroughs
+                    <span class="answer-sub">
+                      Show me click-by-click
+                    </span>
+                  </button>
+                  <button class="answer-btn"
+                    data-tags="learning,bundle">
+                    Guided challenges / 7-day plan
+                    <span class="answer-sub">
+                      I like step-by-step accountability
+                    </span>
+                  </button>
+                  <button class="answer-btn"
+                    data-tags="bundle">
+                    All of the above
+                    <span class="answer-sub">
+                      I want the full experience
+                    </span>
+                  </button>
+                </div>
+              </div>
+              <div class="quiz-illustration">
+                <img src="images/question3-format.jpg"
+                     alt="Screens showing templates, videos, and checklists" />
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 4 -->
+          <div class="quiz-step" data-step="4">
+            <div class="quiz-step-content">
+              <div class="quiz-question">
+                <h2>What feels like the right starting investment?</h2>
+                <p class="quiz-hint">
+                  This doesn’t lock anything in — it helps us suggest the best value.
+                </p>
+                <div class="answer-grid">
+                  <button class="answer-btn"
+                    data-tags="productivity">
+                    “Just get me started” – under $20
+                  </button>
+                  <button class="answer-btn"
+                    data-tags="creative,learning">
+                    “I’m serious about this” – around $39
+                  </button>
+                  <button class="answer-btn"
+                    data-tags="bundle">
+                    “I want the full bundle &amp; best deal”
+                  </button>
+                </div>
+              </div>
+              <div class="quiz-illustration">
+                <img src="images/question4-budget.jpg"
+                     alt="Simple pricing cards for different AI products" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Back button -->
+        <div class="quiz-footer">
+          <button id="back-btn" class="btn btn-ghost" disabled>Back</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULT & PRODUCTS -->
+    <section id="result-section" class="result-section hidden">
+      <div class="result-card">
+        <h2>Your Personalized AI Recommendation</h2>
+        <p id="result-intro">
+          Based on your answers, here’s where you’ll see the biggest
+          results in the next 7 days:
+        </p>
+
+        <div class="result-layout">
+          <!-- Primary product -->
+          <div class="product-card primary">
+            <h3 id="primary-product-name">AI Productivity Playbook</h3>
+            <p id="primary-product-tagline" class="product-tagline">
+              Turn ChatGPT into your personal assistant for email, tasks &amp; life admin.
+            </p>
+            <ul id="primary-product-bullets" class="product-bullets">
+              <!-- Filled by JS -->
+            </ul>
+            <div class="product-price-row">
+              <span id="primary-product-price" class="product-price">$19</span>
+              <span id="primary-product-format" class="product-format">
+                Templates + prompts (PDF)
+              </span>
+            </div>
+            <button
+              id="primary-buy-btn"
+              class="btn btn-primary buy-btn"
+              data-product="single">
+              Get This Toolkit
+            </button>
+            <p class="small-note">
+              You’ll see a one-time offer to upgrade to the full bundle after this.
+            </p>
+          </div>
+
+          <!-- Bundle upsell card (always visible) -->
+          <div class="product-card bundle">
+            <h3>AI Everyday Mastery Bundle</h3>
+            <p class="product-tagline">
+              All 3 toolkits: Productivity, Creative Studio &amp; Learning Lab — in one bundle.
+            </p>
+            <ul class="product-bullets">
+              <li>✔ Productivity prompts, email systems &amp; daily workflows</li>
+              <li>✔ Creative content, image &amp; video prompts</li>
+              <li>✔ Learning, interview, and skill-building templates</li>
+              <li>✔ Lifetime updates to all resources</li>
+            </ul>
+            <div class="product-price-row">
+              <span class="product-price bundle-price">$59</span>
+              <span class="product-format">
+                Includes all guides, templates &amp; bonuses
+              </span>
+            </div>
+            <button
+              id="bundle-buy-btn"
+              class="btn btn-accent buy-btn"
+              data-product="bundle">
+              Unlock the Full Bundle
+            </button>
+            <p class="bundle-savings">
+              Save 40% compared to buying each toolkit separately.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SIMPLE STATIC PRODUCT SECTION (OPTIONAL SEO CONTENT) -->
+    <section id="products" class="info-section">
+      <h2>What’s Inside Each AI Toolkit</h2>
+      <div class="info-grid">
+        <div class="info-card">
+          <h3>AI Productivity Playbook</h3>
+          <p>
+            50+ prompts &amp; plug-and-play templates to handle email, to-dos,
+            notes, meeting summaries, and planning in minutes.
+          </p>
+        </div>
+        <div class="info-card">
+          <h3>AI Creative Studio</h3>
+          <p>
+            Ready-to-use prompts for content, social posts, scripts, image ideas,
+            and simple coding help for your side projects.
+          </p>
+        </div>
+        <div class="info-card">
+          <h3>AI Learning Lab</h3>
+          <p>
+            Study packs, interview simulators, language practice prompts, and
+            tools for learning any topic faster.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- BUNDLE OFFER STRIP -->
+    <section class="bundle-strip">
+      <div class="bundle-strip-content">
+        <p>
+          Ready to go all-in with AI? Grab the
+          <strong>AI Everyday Mastery Bundle</strong> and unlock
+          productivity, creativity, and learning in one place.
+        </p>
+        <button class="btn btn-accent" id="strip-bundle-btn">
+          Yes, Show Me the Bundle
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- BUNDLE UPSELL MODAL -->
+  <div id="upsell-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true">
+      <button class="modal-close" id="modal-close-btn" aria-label="Close">
+        &times;
+      </button>
+      <h2>Wait — Want the Full AI Bundle Instead?</h2>
+      <p>
+        For a little more than this single toolkit, you can unlock
+        <strong>all three:</strong> Productivity, Creative Studio, and Learning Lab,
+        plus future updates.
+      </p>
+      <div class="modal-options">
+        <button class="btn btn-accent" id="modal-upgrade-bundle-btn">
+          Yes, Upgrade Me to the Full Bundle
+        </button>
+        <button class="btn btn-ghost" id="modal-keep-single-btn">
+          No thanks, I’ll just get this one
+        </button>
+      </div>
+      <p class="small-note">
+        You can always upgrade later, but this is the best price you’ll see.
+      </p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
