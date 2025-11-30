@@ -242,8 +242,17 @@ quizSteps.forEach((stepEl) => {
     if (stepNum < totalSteps) {
       setActiveStep(stepNum + 1);
     } else {
-      // End of quiz -> show result
-      const primaryCategory = getPrimaryCategory();
+      // ===== End of quiz -> show result =====
+
+      // Default: pick top scoring category
+      let primaryCategory = getPrimaryCategory();
+
+      // OVERRIDE: if user picked bundle on the last question,
+      // force bundle as the recommendation.
+      if (tags.includes("bundle")) {
+        primaryCategory = "bundle";
+      }
+
       const isBundle = primaryCategory === "bundle";
 
       renderBundleProduct();
