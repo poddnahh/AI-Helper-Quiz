@@ -1,11 +1,11 @@
-// ===== Simple Quiz Logic & Product Recommendation =====
+// ===== SIMPLE QUIZ LOGIC (Q1 + Q4 only) =====
 
-// Track the key answers
+// Quiz answers we care about
 const quizState = {
-  category: null,   // productivity | creative | learning | bundle
-  experience: null, // beginner | intermediate | advanced
-  format: null,     // templates | video | challenge | all
-  budget: null      // low | mid | bundle
+  category: null,   // from Q1: productivity | creative | learning | bundle
+  experience: null, // from Q2 (not used for logic, just stored)
+  format: null,     // from Q3 (not used for logic)
+  budget: null      // from Q4: low | mid | bundle
 };
 
 let currentStep = 1;
@@ -47,7 +47,7 @@ const modalCloseBtn = document.getElementById("modal-close-btn");
 const modalUpgradeBundleBtn = document.getElementById("modal-upgrade-bundle-btn");
 const modalKeepSingleBtn = document.getElementById("modal-keep-single-btn");
 
-// Product data (replace checkoutUrl with real PayPal / Gumroad links)
+// Product data (add your real checkout URLs here)
 const productData = {
   productivity: {
     name: "AI Productivity Playbook",
@@ -103,7 +103,7 @@ const productData = {
   }
 };
 
-// ===== Helpers =====
+// ===== Helper functions =====
 
 function showElement(el) {
   el.classList.remove("hidden");
@@ -133,7 +133,6 @@ function setActiveStep(step) {
   updateProgress();
 }
 
-// Reset quiz answers
 function resetQuizState() {
   quizState.category = null;
   quizState.experience = null;
@@ -141,32 +140,9 @@ function resetQuizState() {
   quizState.budget = null;
 }
 
-// Map answers to which product to show
-function determineProduct(state) {
-  const category = state.category || "productivity";
-  const budget = state.budget || "mid";
-
-  // If they want the bundle or "everything", show bundle
-  if (budget === "bundle" || category === "bundle") {
-    return "bundle";
-  }
-
-  // Lowest budget: always the cheapest product
-  if (budget === "low") {
-    return "productivity";
-  }
-
-  // Mid / normal budget:
-  if (category === "learning") return "learning";
-  if (category === "creative") return "creative";
-  return "productivity";
-}
-
-// Fill DOM with single-product data
 function renderPrimaryProduct(productKey) {
-  const primaryData = productData[productKey];
-
-  if (!primaryData) return;
+  const data = productData[productKey];
+  if (!data) return;
 
   const nameEl = document.getElementById("primary-product-name");
   const taglineEl = document.getElementById("primary-product-tagline");
@@ -174,31 +150,82 @@ function renderPrimaryProduct(productKey) {
   const priceEl = document.getElementById("primary-product-price");
   const formatEl = document.getElementById("primary-product-format");
 
-  nameEl.textContent = primaryData.name;
-  taglineEl.textContent = primaryData.tagline;
-  priceEl.textContent = primaryData.price;
-  formatEl.textContent = primaryData.format;
+  nameEl.textContent = data.name;
+  taglineEl.textContent = data.tagline;
+  priceEl.textContent = data.price;
+  formatEl.textContent = data.format;
 
   bulletsEl.innerHTML = "";
-  primaryData.bullets.forEach((b) => {
+  data.bullets.forEach((b) => {
     const li = document.createElement("li");
     li.textContent = b;
     bulletsEl.appendChild(li);
   });
 
-  primaryBuyBtn.dataset.checkoutUrl = primaryData.checkoutUrl || "#";
+  primaryBuyBtn.dataset.checkoutUrl = data.checkoutUrl || "#";
 }
 
-// Fill bundle price/format from data
 function renderBundleProduct() {
-  const bundleData = productData.bundle;
-  if (!bundleData) return;
+  const data = productData.bundle;
+  if (!data) return;
 
-  bundlePriceEl.textContent = bundleData.price;
-  bundleFormatEl.textContent = bundleData.format;
+  bundlePriceEl.textContent = data.price;
+  bundleFormatEl.textContent = data.format;
 }
 
-// ===== Event Handlers =====
+// Decide which product to show based ONLY on Q1 + Q4
+function determineProduct(state) {
+  const category = state.category || "productivity";
+  const budget = state.budget || "mid";
+
+  // If they choose bundle on last question → ALWAYS bundle
+  if (budget === "bundle") {
+    return "bundle";
+  }
+
+  // If they chose "a bit of everything" on Q1 → treat as bundle
+  if (category === "bundle") {
+    return "bundle";
+  }
+
+  // Otherwise, show exactly what they picked in Question 1
+  if (category === "productivity") return "productivity";
+  if (category === "creative") return "creative";
+  if (category === "learning") return "learning";
+
+  // Fallback
+  return "productivity";
+}
+
+// Show result UI for a product key
+function renderResult(productKey) {
+  renderBundleProduct();
+
+  if (productKey === "bundle") {
+    // Show ONLY bundle card
+    hideElement(singleCard);
+    showElement(bundleCard);
+
+    resultHeading.textContent = "Your Best Match: Full AI Bundle";
+    resultIntro.textContent =
+      "Based on your answers, you’ll see the biggest results by unlocking all three toolkits together.";
+  } else {
+    // Show ONLY single toolkit card
+    showElement(singleCard);
+    hideElement(bundleCard);
+
+    renderPrimaryProduct(productKey);
+
+    resultHeading.textContent = "Your Personalized AI Toolkit";
+    resultIntro.textContent =
+      "This toolkit is the best starting point based on your answers. You’ll see an option to upgrade to the full bundle after checkout.";
+  }
+
+  showElement(resultSection);
+  resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// ===== Event handlers =====
 
 // Start quiz
 startQuizBtn.addEventListener("click", () => {
@@ -208,13 +235,13 @@ startQuizBtn.addEventListener("click", () => {
   currentStep = 1;
   setActiveStep(1);
 
-  document.getElementById("quiz-section").scrollIntoView({
+  quizSection.scrollIntoView({
     behavior: "smooth",
     block: "start"
   });
 });
 
-// Answer clicks (delegated per step)
+// Handle answer clicks for each step
 quizSteps.forEach((stepEl) => {
   stepEl.addEventListener("click", (e) => {
     const btn = e.target.closest(".answer-btn");
@@ -223,46 +250,18 @@ quizSteps.forEach((stepEl) => {
     const value = btn.dataset.value;
     const stepNum = Number(stepEl.dataset.step);
 
-    // Save answer to state
+    // Save the answer
     if (stepNum === 1) quizState.category = value;
-    if (stepNum === 2) quizState.experience = value;
-    if (stepNum === 3) quizState.format = value;
+    if (stepNum === 2) quizState.experience = value; // not used in logic
+    if (stepNum === 3) quizState.format = value;     // not used in logic
     if (stepNum === 4) quizState.budget = value;
 
     if (stepNum < totalSteps) {
       setActiveStep(stepNum + 1);
     } else {
-      // End of quiz → show result based on state
+      // End of quiz → decide product and show result
       const productKey = determineProduct(quizState);
-      const isBundle = productKey === "bundle";
-
-      renderBundleProduct();
-
-      if (isBundle) {
-        // Bundle-only result
-        singleCard.classList.add("hidden");
-        bundleCard.classList.remove("hidden");
-
-        resultHeading.textContent = "Your Best Match: Full AI Bundle";
-        resultIntro.textContent =
-          "Based on your answers, you’ll get the biggest results by unlocking all three toolkits together.";
-      } else {
-        // Single toolkit + bundle upsell
-        singleCard.classList.remove("hidden");
-        bundleCard.classList.remove("hidden");
-
-        resultHeading.textContent = "Your Personalized AI Recommendation";
-        resultIntro.textContent =
-          "Based on your answers, here’s where you’ll see the biggest results in the next 7 days:";
-
-        renderPrimaryProduct(productKey);
-      }
-
-      showElement(resultSection);
-      resultSection.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
+      renderResult(productKey);
     }
   });
 });
@@ -274,19 +273,9 @@ backBtn.addEventListener("click", () => {
   setActiveStep(newStep);
 });
 
-// Bundle strip button scrolls to result/bundle
+// Bundle strip at bottom → force bundle result
 stripBundleBtn.addEventListener("click", () => {
-  renderBundleProduct();
-  // Force show bundle card
-  singleCard.classList.add("hidden");
-  bundleCard.classList.remove("hidden");
-
-  resultHeading.textContent = "AI Everyday Mastery Bundle";
-  resultIntro.textContent =
-    "Unlock all three toolkits together for the best long-term value.";
-
-  showElement(resultSection);
-  resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  renderResult("bundle");
 });
 
 // ===== Upsell Modal & Checkout =====
@@ -329,7 +318,7 @@ modalUpgradeBundleBtn.addEventListener("click", () => {
   }
 });
 
-// Primary product buy → always show upsell modal first
+// Primary product buy → show upsell modal first
 primaryBuyBtn.addEventListener("click", () => {
   openUpsellModal();
 });
@@ -353,5 +342,5 @@ upsellModal.addEventListener("click", (e) => {
   }
 });
 
-// Initial bundle price text
+// Initialize bundle info
 renderBundleProduct();
